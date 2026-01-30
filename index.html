@@ -100,21 +100,18 @@
 <!-- MAIN CONTENT -->
 <div class="container py-5 d-none" id="mainContent">
 
-  <!-- HEADER -->
   <div class="text-center mb-5">
     <div class="sunflower mb-3">🌻</div>
-    <h1 class="fw-bold">Happy Valentine’s Day, Sophia </h1>
+    <h1 class="fw-bold">Happy Valentine’s Day, Sophia Ribas</h1>
     <p class="lead">Tap a coupon anytime to redeem it 🌻</p>
   </div>
 
-  <!-- 💛 VALENTINE QUESTION -->
+  <!-- VALENTINE QUESTION -->
   <div class="card shadow-sm border-0 mb-5">
     <div class="card-body text-center">
       <h2 class="fw-bold mb-3">Will you be my Valentine? 🌻</h2>
-
       <button class="btn btn-warning me-2" onclick="sayYes()">Yes 💛</button>
       <button class="btn btn-outline-warning" onclick="sayYes()">No 😌</button>
-
       <p class="mt-3 fw-semibold text-success d-none" id="yesMessage">
         You just made this Valentine’s Day perfect 🌻💛
       </p>
@@ -125,7 +122,7 @@
   <div class="card shadow-sm border-0 mb-5">
     <div class="card-body text-center">
       <p class="mb-0">
-        Sophia, you bring warmth, light, and happiness just like a sunflower 🌻  
+        Sophia, you bring warmth, light, and happiness — just like a sunflower 🌻  
         This page is a reminder of how special you are.
       </p>
     </div>
@@ -134,10 +131,14 @@
   <!-- COUPONS -->
   <div class="row g-4" id="couponContainer"></div>
 
-  <div class="text-center mt-5 small text-muted">
-    Made with 🌻 just for Sophia
+  <!-- REDO BUTTON -->
+  <div class="text-center mt-4">
+    <button class="btn btn-outline-dark" onclick="resetCoupons()">🔄 Redo Coupons</button>
   </div>
 
+  <div class="text-center mt-4 small text-muted">
+    Made with 🌻 just for Sophia
+  </div>
 </div>
 
 <!-- Scripts -->
@@ -150,7 +151,7 @@
   const couponTexts = [
     "One long hug",
     "Movie night of your choice",
-    "Breakfast in bed",
+    "Sunflower farm visit",
     "Sunrise or sunset coffee together",
     "Custom photo collage made for you",
     "Late-night talk",
@@ -180,37 +181,44 @@
     "Promise jar note (open anytime) 🌻"
   ];
 
-  const redeemed = JSON.parse(localStorage.getItem("redeemedCoupons") || "[]");
+  let redeemed = JSON.parse(localStorage.getItem("redeemedCoupons") || "[]");
   const container = document.getElementById("couponContainer");
 
-  couponTexts.forEach((text, i) => {
-    const isRedeemed = redeemed.includes(i);
-    container.innerHTML += `
-      <div class="col-12 col-sm-6 col-md-4">
-        <div class="card coupon shadow-sm border-0 h-100 ${isRedeemed ? "redeemed" : ""}" data-id="${i}">
-          <div class="card-body text-center">
-            <h5 class="coupon-title mb-2">Valentine’s Day Coupon #${i + 1}</h5>
-            <p>${text}</p>
-            ${isRedeemed ? '<div class="redeemed-tag">Redeemed 🌻</div>' : ''}
+  function renderCoupons() {
+    container.innerHTML = "";
+    couponTexts.forEach((text, i) => {
+      container.innerHTML += `
+        <div class="col-12 col-sm-6 col-md-4">
+          <div class="card coupon shadow-sm border-0 h-100 ${redeemed.includes(i) ? "redeemed" : ""}" data-id="${i}">
+            <div class="card-body text-center">
+              <h5 class="coupon-title mb-2">Valentine’s Day Coupon #${i + 1}</h5>
+              <p>${text}</p>
+              ${redeemed.includes(i) ? '<div class="redeemed-tag">Redeemed 🌻</div>' : ''}
+            </div>
           </div>
         </div>
-      </div>
-    `;
-  });
+      `;
+    });
+  }
+
+  renderCoupons();
 
   document.addEventListener("click", e => {
     const coupon = e.target.closest(".coupon");
     if (!coupon || coupon.classList.contains("redeemed")) return;
-
     const id = Number(coupon.dataset.id);
     redeemed.push(id);
     localStorage.setItem("redeemedCoupons", JSON.stringify(redeemed));
-
-    coupon.classList.add("redeemed");
-    coupon.innerHTML += '<div class="redeemed-tag">Redeemed 🌻</div>';
-
-    confetti({ particleCount: 90, spread: 80, origin: { y: 0.6 } });
+    renderCoupons();
+    confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
   });
+
+  function resetCoupons() {
+    redeemed = [];
+    localStorage.removeItem("redeemedCoupons");
+    renderCoupons();
+    confetti({ particleCount: 120, spread: 100, origin: { y: 0.5 } });
+  }
 
   function unlock() {
     if (passwordInput.value === PASSWORD) showContent();
