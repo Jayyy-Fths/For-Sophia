@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>For Sophia 🌻</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="data:application/json,{
+    &quot;name&quot;:&quot;Sophia 🌻&quot;,
+    &quot;short_name&quot;:&quot;Sophia&quot;,
+    &quot;start_url&quot;:&quot;.&quot;,
+    &quot;display&quot;:&quot;standalone&quot;,
+    &quot;background_color&quot;:&quot;#fddb3a&quot;,
+    &quot;theme_color&quot;:&quot;#fddb3a&quot;
+  }">
+
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #fff6b7, #fddb3a);
+      min-height: 100vh;
+    }
+
+    .sunflower {
+      font-size: 64px;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.15); }
+      100% { transform: scale(1); }
+    }
+
+    .coupon {
+      border-radius: 20px;
+      cursor: pointer;
+      transition: transform 0.2s ease, opacity 0.2s ease;
+      position: relative;
+    }
+
+    .coupon:hover {
+      transform: translateY(-5px);
+    }
+
+    .coupon.redeemed {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    .redeemed-tag {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: #f5b700;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .coupon-title {
+      color: #f5b700;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    #lockScreen {
+      position: fixed;
+      inset: 0;
+      background: linear-gradient(135deg, #fff6b7, #fddb3a);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+    }
+  </style>
+</head>
+<body>
+
+<!-- 🔐 LOCK SCREEN -->
+<div id="lockScreen">
+  <div class="text-center">
+    <div class="sunflower mb-3">🌻</div>
+    <h2>Valentine’s Surprise</h2>
+    <p>Enter the password or wait until Valentine’s Day 💛</p>
+    <input type="password" id="passwordInput" class="form-control mb-3" placeholder="Password">
+    <button class="btn btn-warning" onclick="unlock()">Unlock</button>
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="container py-5 d-none" id="mainContent">
+
+  <div class="text-center mb-5">
+    <div class="sunflower mb-3">🌻</div>
+    <h1 class="fw-bold">Happy Valentine’s Day, Sophia </h1>
+    <p class="lead">Tap a coupon anytime to redeem it 🌻</p>
+  </div>
+
+  <div class="card shadow-sm border-0 mb-5">
+    <div class="card-body text-center">
+      <p class="mb-0">
+        Sophia, you bring warmth, light, and happiness  just like a sunflower 🌻  
+        This page is a reminder of how special you are.
+      </p>
+    </div>
+  </div>
+
+  <div class="row g-4" id="couponContainer"></div>
+
+  <div class="text-center mt-5 small text-muted">
+    Made with 🌻 just for Sophia
+  </div>
+
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+<script>
+  const PASSWORD = "sunflower"; // change if you want
+
+  const couponTexts = [
+    "One long hug",
+    "Movie night of your choice",
+    "Breakfast in bed",
+    "Sunrise or sunset coffee together",
+    "Custom photo collage made for you",
+    "Late-night talk",
+    "Surprise date",
+    "Your favorite snack run",
+    "Playlist made just for you",
+    "Paint or craft something together",
+    "Stargazing night",
+    "Photo day together",
+    "Favorite dessert on me",
+    "Lazy day together",
+    "Road trip vibes",
+    "Compliments all day",
+    "Matching outfits day",
+    "Ice cream date",
+    "Your favorite song on repeat",
+    "Sunset walk",
+    "Random surprise gift",
+    "Comfort day (no stress)",
+    "Your choice date",
+    "Late-night food run",
+    "Extra cuddles",
+    "One wish granted",
+    "Phone-free quality time",
+    "Picnic date",
+    "Laugh-until-we-cry moment",
+    "Promise jar note (open anytime) 🌻"
+  ];
+
+  const redeemed = JSON.parse(localStorage.getItem("redeemedCoupons") || "[]");
+  const container = document.getElementById("couponContainer");
+
+  couponTexts.forEach((text, i) => {
+    const isRedeemed = redeemed.includes(i);
+    container.innerHTML += `
+      <div class="col-12 col-sm-6 col-md-4">
+        <div class="card coupon shadow-sm border-0 h-100 ${isRedeemed ? "redeemed" : ""}" data-id="${i}">
+          <div class="card-body text-center">
+            <h5 class="coupon-title mb-2">Valentine’s Day Coupon #${i + 1}</h5>
+            <p>${text}</p>
+            ${isRedeemed ? '<div class="redeemed-tag">Redeemed 🌻</div>' : ''}
+          </div>
+        </div>
+      </div>
+    `;
+  });
+
+  document.addEventListener("click", e => {
+    const coupon = e.target.closest(".coupon");
+    if (!coupon || coupon.classList.contains("redeemed")) return;
+
+    const id = Number(coupon.dataset.id);
+    redeemed.push(id);
+    localStorage.setItem("redeemedCoupons", JSON.stringify(redeemed));
+
+    coupon.classList.add("redeemed");
+    coupon.innerHTML += '<div class="redeemed-tag">Redeemed 🌻</div>';
+
+    confetti({ particleCount: 90, spread: 80, origin: { y: 0.6 } });
+  });
+
+  function unlock() {
+    if (passwordInput.value === PASSWORD) showContent();
+  }
+
+  function showContent() {
+    lockScreen.style.display = "none";
+    mainContent.classList.remove("d-none");
+  }
+
+  const today = new Date();
+  if (today.getMonth() === 1 && today.getDate() === 14) showContent();
+</script>
+
+</body>
+</html>
